@@ -28,6 +28,7 @@ async function run() {
 
     const menuCollection = client.db("bistroDB").collection("menu");
     const reviewsCollection = client.db("bistroDB").collection("reviews");
+    const cartCollection = client.db("bistroDB").collection("carts");
 
     app.get("/menu", async (req, res) => {
         const result = await menuCollection.find().toArray();
@@ -36,6 +37,14 @@ async function run() {
 
     app.get("/reviews", async (req, res) => {
         const result = await reviewsCollection.find().toArray();
+        res.send(result);
+    });
+
+    // cart collection
+    // step-1: inserting a cart item to mongodb from client side
+    app.post("/carts", async(req, res) => {
+        const item = req.body;
+        const result = await cartCollection.insertOne(item);
         res.send(result);
     });
 
