@@ -41,6 +41,18 @@ async function run() {
     });
 
     // cart collection
+
+    // step-2: getting cart items from mongodb
+    app.get("/carts", async (req, res) => {
+        const email = req.query.email;
+        if (!email) {
+            res.send([]);
+        }
+        const query = { email: email };
+        const result = await cartCollection.find(query).toArray();
+        res.send(result);
+    });
+
     // step-1: inserting a cart item to mongodb from client side
     app.post("/carts", async(req, res) => {
         const item = req.body;
