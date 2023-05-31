@@ -33,6 +33,12 @@ async function run() {
 
     // users related api's
 
+    // step-2: get all users
+    app.get("/users", async (req, res) => {
+        const result = await usersCollection.find().toArray();
+        res.send(result);
+    });
+
     // step-1: insert user name and email to mongodb
     app.post("/users", async (req, res) => {
         const user = req.body;
@@ -42,6 +48,19 @@ async function run() {
           return res.send({ message: "User already exist!" });
         }
         const result = await usersCollection.insertOne(user);
+        res.send(result);
+    });
+
+    // step-3: updating user role to admin
+    app.patch("/users/admin/:id", async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = {
+            $set: {
+              role: "admin"
+            },
+        };
+        const result = await usersCollection.updateOne(filter, updateDoc);
         res.send(result);
     });
 
