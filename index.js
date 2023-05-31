@@ -39,6 +39,14 @@ async function run() {
         res.send(result);
     });
 
+    // step-6: get specific user by email
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+  });
+
     // step-1: insert user name and email to mongodb
     app.post("/users", async (req, res) => {
         const user = req.body;
@@ -52,7 +60,7 @@ async function run() {
     });
 
     // step-3: updating user role to admin
-    app.patch("/users/admin/:id", async (req, res) => {
+    app.patch("/users/user-to-admin/:id", async (req, res) => {
         const id = req.params.id;
         const filter = { _id: new ObjectId(id) };
         const updateDoc = {
@@ -66,16 +74,26 @@ async function run() {
 
     // step-4: updating an user role from admin to general user
     app.patch("/users/admin-to-user/:id", async (req, res) => {
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const updateDoc = {
-          $set: {
-            role: "subscriber"
-          },
-      };
-      const result = await usersCollection.updateOne(filter, updateDoc);
-      res.send(result);
-  });
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const updateDoc = {
+            $set: {
+                role: "subscriber"
+            },
+        };
+        const result = await usersCollection.updateOne(filter, updateDoc);
+        res.send(result);
+    });
+
+    // step-5: delete an user
+    app.delete("/users/:id", async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await usersCollection.deleteOne(query);
+        res.send(result);
+    });
+
+
 
     // menu related api's
     app.get("/menu", async (req, res) => {
