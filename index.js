@@ -64,6 +64,19 @@ async function run() {
         res.send(result);
     });
 
+    // step-4: updating an user role from admin to general user
+    app.patch("/users/admin-to-user/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+          $set: {
+            role: "subscriber"
+          },
+      };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+  });
+
     // menu related api's
     app.get("/menu", async (req, res) => {
         const result = await menuCollection.find().toArray();
