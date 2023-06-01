@@ -51,7 +51,7 @@ async function run() {
 
     app.post("/jwt", (req, res) => {
         const user = req.body;
-        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+        const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "10h" });
         res.send({ token });
     });
 
@@ -63,13 +63,32 @@ async function run() {
         res.send(result);
     });
 
+    // step-7: checking e user role admin or not
+    // security layer: verifyJWT
+    // email same
+    // check admin
+    app.get("/users/admin/:email", verifyJWT, async (req, res) => {
+        const email = req.params.email;
+        if (req.decoded.email !== email) {
+            res.send({ admin: false });
+        }
+
+        const query = { email: email };
+        const user = await usersCollection.findOne(query);
+        const result = { admin: user?.role === "admin" };
+        res.send(result);
+    });
+
     // step-6: get specific user by email
     app.get("/users/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const result = await usersCollection.findOne(query);
-      res.send(result);
-  });
+        const email = req.params.email;
+        // if (req.decoded.email !== email) {
+        //     return res.send({ admin: false });
+        // }
+        const query = { email: email };
+        const result = await usersCollection.findOne(query);
+        res.send(result);
+    });
 
     // step-1: insert user name and email to mongodb
     app.post("/users", async (req, res) => {
@@ -137,7 +156,7 @@ async function run() {
     app.get("/carts", verifyJWT, async (req, res) => {
         const email = req.query.email;
         if (!email) {
-            res.send([]);
+            return res.send([]);
         }
 
         const decodedEmail = req.decoded.email;
