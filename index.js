@@ -93,9 +93,6 @@ async function run() {
     // step-6: get specific user by email
     app.get("/users/:email", async (req, res) => {
         const email = req.params.email;
-        // if (req.decoded.email !== email) {
-        //     return res.send({ admin: false });
-        // }
         const query = { email: email };
         const result = await usersCollection.findOne(query);
         res.send(result);
@@ -150,8 +147,17 @@ async function run() {
 
 
     // menu related api's
+
+    // step-1: getting all menu items from mongodb to display in client side
     app.get("/menu", async (req, res) => {
         const result = await menuCollection.find().toArray();
+        res.send(result);
+    });
+
+    // step-2: uploading new menu item to mongodb
+    app.post("/menu", verifyJWT, verifyAdmin, async (req, res) => {
+        const newItem = req.body;
+        const result = await menuCollection.insertOne(newItem);
         res.send(result);
     });
 
