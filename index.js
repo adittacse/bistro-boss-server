@@ -3,6 +3,7 @@ const app = express();
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const cors = require("cors");
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 const port = process.env.PORT || 3000;
 
 // middleware
@@ -158,6 +159,14 @@ async function run() {
     app.post("/menu", verifyJWT, verifyAdmin, async (req, res) => {
         const newItem = req.body;
         const result = await menuCollection.insertOne(newItem);
+        res.send(result);
+    });
+
+    // step-3: delete an item of menu
+    app.delete("/menu/:id", verifyJWT, verifyAdmin, async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await menuCollection.deleteOne(query);
         res.send(result);
     });
 
