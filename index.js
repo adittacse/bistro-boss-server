@@ -256,8 +256,8 @@ async function run() {
 
     // second best solution
     // aggregate pipeline
-    // connecting two table data verifyJWT, verifyAdmin,
-    app.get("/order-stats", async (req, res) => {
+    // connecting two table data
+    app.get("/order-stats", verifyJWT, verifyAdmin, async (req, res) => {
       const pipeline = [
         {
           $addFields: {
