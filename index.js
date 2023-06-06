@@ -274,13 +274,21 @@ async function run() {
                 $group: {
                     _id: "$menuItemsData.category",
                     count: { $sum: 1 },
-                    totalPrice: { $sum: "$menuItemsData.price" }
+                    total: { $sum: "$menuItemsData.price" }
+                }
+            },
+            {
+                $project: {
+                    category: "$_id",
+                    count: 1,
+                    total: { $round: ["$total", 2] },
+                    _id: 0
                 }
             }
-          ];
+        ];
 
-          const result = await paymentCollection.aggregate(pipeline).toArray();
-          res.send(result);
+        const result = await paymentCollection.aggregate(pipeline).toArray();
+        res.send(result);
     });
 
     // Send a ping to confirm a successful connection
