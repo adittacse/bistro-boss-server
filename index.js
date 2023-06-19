@@ -6,11 +6,18 @@ const cors = require("cors");
 const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 const nodemailer = require("nodemailer");
 const mg = require('nodemailer-mailgun-transport');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const port = process.env.PORT || 3000;
+
+const router = express.Router();
 
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
+
 
 // let transporter = nodemailer.createTransport({
 //   host: 'smtp.sendgrid.net',
@@ -198,12 +205,81 @@ async function run() {
       res.send(result);
     });
 
-    // step-2: uploading new menu item to mongodb
+    // // step-2: uploading new menu item to mongodb
     app.post("/menu", verifyJWT, verifyAdmin, async (req, res) => {
       const newItem = req.body;
       const result = await menuCollection.insertOne(newItem);
       res.send(result);
     });
+
+
+    // step-2 : uploading product images to uploads folder
+    // app.get('/uploads/:productId', (req, res) => {
+    //     const { productId } = req.params;
+    //     const productImagePath = path.join(__dirname, 'uploads', productId);
+        
+    //     fs.readdir(productImagePath, (err, files) => {
+    //         if (err) {
+    //             // console.error('Error reading product images:', err);
+    //             return res.sendStatus(500);
+    //         }
+            
+    //         if (files.length === 0) {
+    //             console.log('No images found for the product');
+    //             return res.sendStatus(404);
+    //         }
+            
+    //         const productImage = files[0]; // Assuming the first image is the desired one
+            
+    //         const imagePath = path.join(productImagePath, productImage);
+    //         res.sendFile(imagePath);
+    //     });
+    // });
+    
+
+
+    // Step 1: Set up multer storage and upload
+    // multiple file upload
+    // const storage = multer.diskStorage({
+    //   destination: (req, file, cb) => {
+    //     const productId = req.params.productId;
+    //     const uploadDir = path.join(__dirname, 'uploads', productId);
+    
+    //     // Create the product directory if it doesn't exist
+    //     if (!fs.existsSync(uploadDir)) {
+    //       fs.mkdirSync(uploadDir, { recursive: true });
+    //     }
+    
+    //     cb(null, uploadDir);
+    //   },
+    //   filename: (req, file, cb) => {
+    //     const ext = path.extname(file.originalname);
+    //     const filename = `${file.fieldname}-${Date.now()}${ext}`;
+    //     cb(null, filename);
+    //   },
+    // });
+    
+    // const upload = multer({ storage });
+    
+    // // Step 2: Handle image upload
+    // app.post('/upload/:productId', upload.array('image'), (req, res) => {
+    //   const images = req.files.map((file) => file.filename);
+    //   res.json({ success: true, images });
+    // });
+
+    // module.exports = app;
+
+
+
+
+    // Step 3: Handle the route to insert the menu item into the database
+
+    app.post('/menu', verifyJWT, verifyAdmin, async (req, res) => {
+        const newItem = req.body;
+        const result = await menuCollection.insertOne(newItem);
+        res.send(result);
+    });
+
 
     // step-3: delete an item of menu
     app.delete("/menu/:id", verifyJWT, verifyAdmin, async (req, res) => {
