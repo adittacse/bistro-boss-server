@@ -261,25 +261,14 @@ async function run() {
     
     // const upload = multer({ storage });
     
-    // // Step 2: Handle image upload
-    // app.post('/upload/:productId', upload.array('image'), (req, res) => {
-    //   const images = req.files.map((file) => file.filename);
-    //   res.json({ success: true, images });
-    // });
-
-    // module.exports = app;
-
-
 
 
     // Step 3: Handle the route to insert the menu item into the database
-
     app.post('/menu', verifyJWT, verifyAdmin, async (req, res) => {
         const newItem = req.body;
         const result = await menuCollection.insertOne(newItem);
         res.send(result);
     });
-
 
     // step-3: delete an item of menu
     app.delete("/menu/:id", verifyJWT, verifyAdmin, async (req, res) => {
@@ -427,8 +416,8 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
